@@ -1,2 +1,1721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alipen.cl — Arquitectura & Taller IA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-elevated: #12121a;
+      --bg-card: #16161f;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8e8ed;
+      --text-muted: #8b8b9a;
+      --accent: #7c5cff;
+      --accent-glow: rgba(124, 92, 255, 0.35);
+      --accent-2: #00d4aa;
+      --gradient: linear-gradient(135deg, #7c5cff 0%, #00d4aa 100%);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 50%, rgba(0, 212, 170, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* —— Header —— */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 15, 0.75);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.35rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+
+    nav a:hover { color: var(--text); }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* —— Secciones comunes —— */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: #0a0a0f;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px var(--accent-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* —— Inicio —— */
+    .hero-intro {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      padding-top: 7rem;
+    }
+
+    .hero-intro h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero-intro p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* —— Portafolio Alipen —— */
+    #portafolio {
+      max-width: 1400px;
+    }
+
+    #portafolio .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .portfolio-card__num {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 1.75rem;
+      height: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: #0a0a0f;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .portfolio-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .portfolio-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .portfolio-card__media {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: #0d0d14;
+      cursor: zoom-in;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+    }
+
+    .portfolio-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .portfolio-card__zoom-hint {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.65rem;
+      background: rgba(10, 10, 15, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .portfolio-card__body {
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .portfolio-card__meta {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 0.35rem;
+    }
+
+    .portfolio-card__body h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .portfolio-card__body p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* —— Taller: carrusel —— */
+    #taller {
+      max-width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    #taller .section-header,
+    #taller .taller-ai-wrap {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    .taller-carousel-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 72vh;
+      margin-bottom: 3rem;
+    }
+
+    .carousel {
+      position: absolute;
+      inset: 0;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .carousel-slide.active { opacity: 1; }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        var(--bg) 0%,
+        rgba(10, 10, 15, 0.55) 45%,
+        rgba(10, 10, 15, 0.2) 100%
+      );
+    }
+
+    .taller-carousel-caption {
+      position: absolute;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92%, 720px);
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .taller-carousel-caption h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .taller-carousel-caption p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem;
+      max-width: min(92%, 520px);
+      z-index: 3;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .carousel-dot.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.2);
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      background: rgba(10, 10, 15, 0.6);
+      color: var(--text);
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.25rem;
+      transition: var(--transition);
+    }
+
+    .carousel-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .carousel-btn--prev { left: 1.5rem; }
+    .carousel-btn--next { right: 1.5rem; }
+
+    /* —— Taller: generador Image-to-Image —— */
+    .ai-section {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+    }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-2);
+      background: rgba(0, 212, 170, 0.12);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    .ai-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .ai-upload-zone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .ai-upload-zone:hover,
+    .ai-upload-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(124, 92, 255, 0.06);
+    }
+
+    .ai-upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .ai-upload-zone svg {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.75rem;
+      opacity: 0.45;
+    }
+
+    .ai-upload-zone p { color: var(--text-muted); font-size: 0.9rem; }
+    .ai-upload-zone strong { color: var(--text); }
+
+    .ai-sketch-preview {
+      display: none;
+      margin-top: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      max-height: 220px;
+      background: #0d0d14;
+    }
+
+    .ai-sketch-preview.visible { display: block; }
+
+    .ai-upload-status {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      min-height: 1.25rem;
+    }
+
+    .ai-upload-status.ready { color: var(--accent-2); }
+    .ai-upload-status.error { color: #ff6b8a; }
+
+    .ai-sketch-preview img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .ai-form-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 1rem;
+    }
+
+    .ai-form input[type="text"],
+    .ai-form select,
+    .ai-form textarea {
+      padding: 0.9rem 1.2rem;
+      font-family: inherit;
+      font-size: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition);
+      width: 100%;
+    }
+
+    .ai-form textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .ai-form input:focus,
+    .ai-form select:focus,
+    .ai-form textarea:focus { border-color: var(--accent); }
+
+    .ai-form select { min-width: 110px; cursor: pointer; }
+
+    .ai-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .ai-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .ai-options input[type="checkbox"] { accent-color: var(--accent); }
+
+    .ai-preview {
+      position: relative;
+      min-height: 360px;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .ai-preview-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+
+    .ai-preview-placeholder svg {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      opacity: 0.4;
+    }
+
+    .ai-preview img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+    }
+
+    .ai-loading {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 15, 0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .ai-loading.active { opacity: 1; visibility: visible; }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ai-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* —— Sobre mí —— */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-text h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .about-text p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .skill-tag {
+      padding: 0.4rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    /* —— Lightbox con zoom —— */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .lightbox.open { opacity: 1; visibility: visible; }
+
+    .lightbox-toolbar {
+      position: absolute;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 2;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 0.5rem;
+    }
+
+    .lightbox-toolbar button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.25rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .lightbox-toolbar button:hover { background: var(--accent); }
+
+    .lightbox-zoom-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-width: 3.5rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .lightbox-viewport {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .lightbox-viewport.dragging { cursor: grabbing; }
+
+    .lightbox-viewport img {
+      max-width: 95vw;
+      max-height: 82vh;
+      object-fit: contain;
+      transition: transform 0.15s ease-out;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .lightbox-caption {
+      text-align: center;
+      padding: 0.75rem 1rem 0.25rem;
+      max-width: 640px;
+    }
+
+    .lightbox-caption h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+    }
+
+    .lightbox-caption p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 48px;
+      height: 48px;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 1.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 3;
+      transition: var(--transition);
+    }
+
+    .lightbox-close:hover { background: var(--accent); }
+
+    .lightbox-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* —— Contacto —— */
+    .contact-card {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .contact-card p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    .btn-email {
+      font-size: 1.1rem;
+      padding: 1.1rem 2.5rem;
+      box-shadow: 0 10px 40px var(--accent-glow);
+      animation: contact-pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes contact-pulse {
+      0%, 100% { box-shadow: 0 10px 40px var(--accent-glow); }
+      50% { box-shadow: 0 14px 50px rgba(124, 92, 255, 0.55); }
+    }
+
+    .btn-email:hover {
+      animation: none;
+      box-shadow: 0 16px 48px rgba(124, 92, 255, 0.5);
+    }
+
+    .btn-email svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .contact-email-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent-2);
+      transition: color var(--transition);
+    }
+
+    .contact-email-link:hover {
+      color: var(--text);
+    }
+
+    /* —— Footer —— */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a { color: var(--accent); }
+
+    footer .footer-email {
+      margin-top: 0.75rem;
+      font-size: 1rem;
+    }
+
+    footer .footer-email a {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    footer .footer-email a:hover {
+      color: var(--text);
+    }
+
+    /* —— Responsive —— */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .ai-form-row { grid-template-columns: 1fr; }
+      .ai-section { padding: 1.5rem; }
+      .carousel-btn { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        position: fixed;
+        top: 60px;
+        right: 0;
+        flex-direction: column;
+        background: var(--bg-elevated);
+        padding: 1.5rem;
+        border-left: 1px solid var(--border);
+        transform: translateX(100%);
+        transition: transform var(--transition);
+      }
+
+      nav ul.open { transform: translateX(0); }
+      .menu-toggle { display: block; }
+      .taller-carousel-wrap { min-height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="#inicio" class="logo">Alipen.cl</a>
+    <button class="menu-toggle" type="button" aria-label="Menú">☰</button>
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#portafolio">Portafolio</a></li>
+        <li><a href="#taller">Taller IA</a></li>
+        <li><a href="#sobre">Sobre mí</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Inicio -->
+  <section class="hero-intro" id="inicio">
+    <div>
+      <span class="section-tag">Estudio de arquitectura</span>
+      <h1>Diseño técnico y visualización con IA</h1>
+      <p>Proyectos reales de Alipen.cl y un taller de modelos generativos para transformar bocetos en renders arquitectónicos.</p>
+      <div class="hero-links">
+        <a href="#portafolio" class="btn btn-primary">Ver portafolio</a>
+        <a href="#taller" class="btn btn-outline">Taller / Modelos IA</a>
+        <a href="#contacto" class="btn btn-outline">Contacto</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portafolio Alipen.cl -->
+  <section id="portafolio">
+    <div class="section-header">
+      <span class="section-tag">Alipen.cl</span>
+      <h2>Portafolio de obra</h2>
+      <p>12 proyectos documentados. Las imágenes se muestran completas para leer cotas y textos técnicos. Haz clic para ampliar con zoom.</p>
+    </div>
+    <div class="gallery-grid" id="portfolioGallery"></div>
+  </section>
+
+  <!-- Taller / Modelos IA -->
+  <section id="taller">
+    <div class="section-header">
+      <span class="section-tag">Taller</span>
+      <h2>Modelos IA & visualización</h2>
+      <p>Renders del taller arquitectónico y motor Image-to-Image con Pollinations.ai para mejorar bocetos subidos.</p>
+    </div>
+
+    <div class="taller-carousel-wrap" aria-label="Carrusel de renders del taller">
+      <div class="carousel" id="tallerCarousel"></div>
+      <button type="button" class="carousel-btn carousel-btn--prev" id="carouselPrev" aria-label="Anterior">‹</button>
+      <button type="button" class="carousel-btn carousel-btn--next" id="carouselNext" aria-label="Siguiente">›</button>
+      <div class="taller-carousel-caption">
+        <h3 id="carouselCaptionTitle">Modelos del taller</h3>
+        <p id="carouselCaptionText">13 visualizaciones · ciclo automático</p>
+      </div>
+      <div class="carousel-dots" id="carouselDots" role="tablist"></div>
+    </div>
+
+    <div class="taller-ai-wrap">
+      <div class="ai-section">
+        <span class="ai-badge">✦ Image-to-Image · Pollinations.ai · modelo kontext</span>
+        <form class="ai-form" id="aiForm">
+          <div class="ai-upload-zone" id="uploadZone">
+            <input type="file" id="sketchInput" accept="image/*" aria-label="Subir boceto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <p><strong>Sube tu boceto</strong> (JPG, PNG, WEBP)</p>
+            <p>Arrastra aquí o haz clic para seleccionar</p>
+          </div>
+          <div class="ai-sketch-preview" id="sketchPreview">
+            <img id="sketchPreviewImg" alt="Vista previa del boceto">
+          </div>
+          <p class="ai-upload-status" id="uploadStatus" aria-live="polite"></p>
+          <label for="aiPrompt">Instrucción de mejora (prompt)</label>
+          <textarea id="aiPrompt" rows="3" required placeholder="Ej.: transformar en render fotorrealista, luz natural, materiales de madera y vidrio, estilo arquitectónico contemporáneo">mejorar boceto arquitectónico a render fotorrealista profesional, luz diurna suave, materiales realistas, alta definición</textarea>
+          <div class="ai-form-row">
+            <select id="aiWidth" aria-label="Ancho">
+              <option value="768">768px</option>
+              <option value="1024" selected>1024px</option>
+            </select>
+            <select id="aiHeight" aria-label="Alto">
+              <option value="768" selected>768px</option>
+              <option value="1024">1024px</option>
+            </select>
+          </div>
+          <div class="ai-options">
+            <label><input type="checkbox" id="aiNologo" checked> Sin logo</label>
+            <label><input type="checkbox" id="aiEnhance" checked> Mejorar prompt</label>
+          </div>
+          <button type="submit" class="btn btn-primary" id="aiGenerateBtn">Mejorar boceto con IA</button>
+        </form>
+        <div class="ai-preview" id="aiPreview">
+          <div class="ai-preview-placeholder" id="aiPlaceholder">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p>Sube un boceto y genera el render mejorado aquí</p>
+          </div>
+          <img id="aiResult" alt="Render mejorado por IA" hidden>
+          <div class="ai-loading" id="aiLoading">
+            <div class="spinner"></div>
+            <p>Procesando Image-to-Image con Pollinations.ai…</p>
+          </div>
+        </div>
+        <div class="ai-actions">
+          <button type="button" class="btn btn-outline" id="aiDownloadBtn" disabled>Descargar</button>
+          <button type="button" class="btn btn-outline" id="aiRegenerateBtn" disabled>Regenerar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre mí -->
+  <section id="sobre">
+    <div class="section-header">
+      <h2>Sobre el estudio</h2>
+      <p>Arquitectura técnica, documentación de obra y apoyo visual con inteligencia artificial.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <h3>Alipen — diseño y obra</h3>
+        <p>Desarrollo proyectos residenciales y comerciales con foco en planos legibles, cumplimiento normativo y presentación clara al cliente.</p>
+        <p>El taller de modelos IA complementa el proceso: desde boceto manual hasta render listo para revisión.</p>
+        <div class="skills">
+          <span class="skill-tag">Planos DWG/PDF</span>
+          <span class="skill-tag">Residencial</span>
+          <span class="skill-tag">Comercial</span>
+          <span class="skill-tag">Renders IA</span>
+          <span class="skill-tag">Image-to-Image</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto">
+    <div class="section-header">
+      <span class="section-tag">Contacto</span>
+      <h2>Hablemos de tu proyecto</h2>
+      <p>Consultas por planos, remodelaciones, regularizaciones o visualización con IA.</p>
+    </div>
+    <div class="contact-card">
+      <p>Escríbeme directamente y te responderé a la brevedad.</p>
+      <a href="mailto:gonzalo@alipen.cl?subject=Consulta%20desde%20Alipen.cl" class="btn btn-primary btn-email">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        Contactar por Email
+      </a>
+      <a href="mailto:gonzalo@alipen.cl" class="contact-email-link">gonzalo@alipen.cl</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 <a href="https://alipen.cl" target="_blank" rel="noopener">Alipen.cl</a> · Renders IA con <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations.ai</a></p>
+    <p class="footer-email">Correo: <a href="mailto:gonzalo@alipen.cl">gonzalo@alipen.cl</a></p>
+  </footer>
+
+  <!-- Lightbox con zoom -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de plano">
+    <button type="button" class="lightbox-close" aria-label="Cerrar">×</button>
+    <div class="lightbox-toolbar">
+      <button type="button" id="zoomOut" aria-label="Alejar">−</button>
+      <span class="lightbox-zoom-label" id="zoomLevel">100%</span>
+      <button type="button" id="zoomIn" aria-label="Acercar">+</button>
+      <button type="button" id="zoomReset" aria-label="Restablecer zoom" title="Restablecer">⟲</button>
+    </div>
+    <div class="lightbox-viewport" id="lightboxViewport">
+      <img src="" alt="" id="lightboxImg">
+    </div>
+    <div class="lightbox-caption">
+      <h4 id="lightboxTitle"></h4>
+      <p id="lightboxDesc"></p>
+      <p class="lightbox-hint">Clic en la imagen · rueda del ratón · botones +/− · arrastrar cuando hay zoom</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* —— Menú móvil —— */
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navUl = document.querySelector('nav ul');
+      menuToggle?.addEventListener('click', () => navUl.classList.toggle('open'));
+      document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', () => navUl.classList.remove('open'));
+      });
+
+      /* —— Carrusel Taller (13 imágenes en Modelos-taller-arq/) —— */
+      const TALLER_IMAGES = [
+        'a.jpg', 'a1.jpg', 'a2.jpg',
+        'b.jpg', 'b1.jpg',
+        'c.jpg', 'c1.jpg',
+        'e.jpg', 'e1.jpg',
+        'f.jpg', 'f1.jpg',
+        'g.jpg', 'g1.jpg'
+      ];
+      const CAROUSEL_BASE = 'Modelos-taller-arq/';
+      const carouselEl = document.getElementById('tallerCarousel');
+      const captionTitle = document.getElementById('carouselCaptionTitle');
+      const captionText = document.getElementById('carouselCaptionText');
+
+      TALLER_IMAGES.forEach(function (file, i) {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
+        slide.innerHTML = '<img src="' + CAROUSEL_BASE + file + '" alt="Modelo taller — ' + file + '">';
+        carouselEl.appendChild(slide);
+      });
+
+      let slides = carouselEl.querySelectorAll('.carousel-slide');
+      const dotsContainer = document.getElementById('carouselDots');
+      const carouselPrev = document.getElementById('carouselPrev');
+      const carouselNext = document.getElementById('carouselNext');
+      let currentSlide = 0;
+      let carouselInterval;
+      const CAROUSEL_DELAY = 6000;
+
+      function updateCarouselCaption() {
+        const file = TALLER_IMAGES[currentSlide];
+        const num = currentSlide + 1;
+        captionTitle.textContent = 'Modelo ' + file.replace('.jpg', '');
+        captionText.textContent = 'Imagen ' + num + ' de ' + TALLER_IMAGES.length + ' · ' + file;
+      }
+
+      updateCarouselCaption();
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Ir a slide ' + (i + 1));
+        dot.addEventListener('click', () => { goToSlide(i); resetCarousel(); });
+        dotsContainer.appendChild(dot);
+      });
+
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+      function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        currentSlide = (index + slides.length) % slides.length;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+        updateCarouselCaption();
+      }
+
+      function nextSlide() { goToSlide(currentSlide + 1); }
+      function prevSlide() { goToSlide(currentSlide - 1); }
+
+      function startCarousel() {
+        carouselInterval = setInterval(nextSlide, CAROUSEL_DELAY);
+      }
+
+      function resetCarousel() {
+        clearInterval(carouselInterval);
+        startCarousel();
+      }
+
+      carouselPrev?.addEventListener('click', () => { prevSlide(); resetCarousel(); });
+      carouselNext?.addEventListener('click', () => { nextSlide(); resetCarousel(); });
+      startCarousel();
+
+      /* —— Galería: 12 proyectos —— */
+      const PORTFOLIO_PROJECTS = [
+        { n: 1, title: 'Interior proyecto Casa Familiar', desc: 'Vistas interiores', meta: 'Interior · Residencial' },
+        { n: 2, title: 'Interior Quincho Madera', desc: 'Vistas interiores', meta: 'Interior · Quincho' },
+        { n: 3, title: 'Depto. Piloto Plaza Egaña', desc: 'Vistas interiores', meta: 'Interior · Departamento' },
+        { n: 4, title: 'Cocina Vivienda', desc: 'Vistas remodelación interior', meta: 'Interior · Remodelación' },
+        { n: 5, title: 'Edificio Cooperativa', desc: 'Vistas exteriores e interiores', meta: 'Edificación · Cooperativa' },
+        { n: 6, title: 'Remodelación fachada Mutual CCHC', desc: 'Vistas exteriores', meta: 'Fachada · Institucional' },
+        { n: 7, title: 'Restauración de cubierta Edificación', desc: 'Vistas', meta: 'Restauración · Cubierta' },
+        { n: 8, title: 'Planos Municipales aprobados, Regularizaciones', desc: 'Documentación técnica municipal', meta: 'Planos · Regularización' },
+        { n: 9, title: 'Planos Municipales Planta de local Comercial', desc: 'Planta y normativa comercial', meta: 'Planos · Comercial' },
+        { n: 10, title: 'Planos Municipales Planta Industrial', desc: 'Planta y uso industrial', meta: 'Planos · Industrial' },
+        { n: 11, title: 'Diseño Interiores, remodelación Biblioteca', desc: 'Propuesta y vistas interiores', meta: 'Interior · Biblioteca' },
+        { n: 12, title: 'Restauración Edificación en zona Patrimonial', desc: 'Vistas y documentación patrimonial', meta: 'Restauración · Patrimonio' }
+      ];
+
+      const portfolioGallery = document.getElementById('portfolioGallery');
+
+      PORTFOLIO_PROJECTS.forEach(function (p) {
+        const src = 'portafolio/proyecto' + p.n + '.jpg';
+        const card = document.createElement('article');
+        card.className = 'portfolio-card';
+        card.setAttribute('data-lightbox', '');
+        card.dataset.src = src;
+        card.dataset.title = p.title;
+        card.dataset.desc = p.desc;
+        card.innerHTML =
+          '<div class="portfolio-card__media" role="button" tabindex="0" aria-label="Ampliar ' + p.title + '">' +
+            '<span class="portfolio-card__num">' + p.n + '</span>' +
+            '<img src="' + src + '" alt="' + p.title + ' — ' + p.desc + '" loading="lazy">' +
+            '<span class="portfolio-card__zoom-hint">Clic · Zoom</span>' +
+          '</div>' +
+          '<div class="portfolio-card__body">' +
+            '<span class="portfolio-card__meta">' + p.meta + '</span>' +
+            '<h3>' + p.title + '</h3>' +
+            '<p>' + p.desc + '</p>' +
+          '</div>';
+        portfolioGallery.appendChild(card);
+      });
+
+      /* —— Lightbox + zoom —— */
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxViewport = document.getElementById('lightboxViewport');
+      const lightboxTitle = document.getElementById('lightboxTitle');
+      const lightboxDesc = document.getElementById('lightboxDesc');
+      const zoomLevelEl = document.getElementById('zoomLevel');
+      const zoomInBtn = document.getElementById('zoomIn');
+      const zoomOutBtn = document.getElementById('zoomOut');
+      const zoomResetBtn = document.getElementById('zoomReset');
+      const lightboxClose = lightbox.querySelector('.lightbox-close');
+
+      const ZOOM_MIN = 1;
+      const ZOOM_MAX = 4;
+      const ZOOM_STEP = 0.35;
+      let scale = 1;
+      let panX = 0;
+      let panY = 0;
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let panStartX = 0;
+      let panStartY = 0;
+
+      function applyTransform() {
+        lightboxImg.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
+        zoomLevelEl.textContent = Math.round(scale * 100) + '%';
+      }
+
+      function resetZoom() {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+        applyTransform();
+      }
+
+      function setZoom(newScale) {
+        scale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, newScale));
+        if (scale === 1) { panX = 0; panY = 0; }
+        applyTransform();
+      }
+
+      function openLightbox(card) {
+        lightboxImg.src = card.dataset.src;
+        lightboxImg.alt = card.querySelector('img')?.alt || '';
+        lightboxTitle.textContent = card.dataset.title || '';
+        lightboxDesc.textContent = card.dataset.desc || '';
+        resetZoom();
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+        resetZoom();
+      }
+
+      document.querySelectorAll('[data-lightbox]').forEach(card => {
+        const trigger = card.querySelector('.portfolio-card__media');
+        const open = () => openLightbox(card);
+        trigger?.addEventListener('click', open);
+        trigger?.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', e => {
+        if (e.target === lightbox || e.target === lightboxViewport) closeLightbox();
+      });
+
+      lightboxImg.addEventListener('click', e => {
+        e.stopPropagation();
+        setZoom(scale >= ZOOM_MAX ? 1 : scale + ZOOM_STEP);
+      });
+
+      zoomInBtn.addEventListener('click', e => { e.stopPropagation(); setZoom(scale + ZOOM_STEP); });
+      zoomOutBtn.addEventListener('click', e => { e.stopPropagation(); setZoom(scale - ZOOM_STEP); });
+      zoomResetBtn.addEventListener('click', e => { e.stopPropagation(); resetZoom(); });
+
+      lightboxViewport.addEventListener('wheel', e => {
+        if (!lightbox.classList.contains('open')) return;
+        e.preventDefault();
+        setZoom(scale + (e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP));
+      }, { passive: false });
+
+      lightboxViewport.addEventListener('mousedown', e => {
+        if (scale <= 1) return;
+        isDragging = true;
+        lightboxViewport.classList.add('dragging');
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        panStartX = panX;
+        panStartY = panY;
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        panX = panStartX + (e.clientX - dragStartX);
+        panY = panStartY + (e.clientY - dragStartY);
+        applyTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+        lightboxViewport.classList.remove('dragging');
+      });
+
+      document.addEventListener('keydown', e => {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === '+' || e.key === '=') setZoom(scale + ZOOM_STEP);
+        if (e.key === '-') setZoom(scale - ZOOM_STEP);
+        if (e.key === '0') resetZoom();
+      });
+
+      /* —— Image-to-Image Pollinations —— */
+      const aiForm = document.getElementById('aiForm');
+      const sketchInput = document.getElementById('sketchInput');
+      const uploadZone = document.getElementById('uploadZone');
+      const uploadStatus = document.getElementById('uploadStatus');
+      const sketchPreview = document.getElementById('sketchPreview');
+      const sketchPreviewImg = document.getElementById('sketchPreviewImg');
+      const aiPrompt = document.getElementById('aiPrompt');
+      const aiWidth = document.getElementById('aiWidth');
+      const aiHeight = document.getElementById('aiHeight');
+      const aiNologo = document.getElementById('aiNologo');
+      const aiEnhance = document.getElementById('aiEnhance');
+      const aiResult = document.getElementById('aiResult');
+      const aiPlaceholder = document.getElementById('aiPlaceholder');
+      const aiLoading = document.getElementById('aiLoading');
+      const aiDownloadBtn = document.getElementById('aiDownloadBtn');
+      const aiRegenerateBtn = document.getElementById('aiRegenerateBtn');
+      const aiGenerateBtn = document.getElementById('aiGenerateBtn');
+
+      /* API pública de imágenes (dominio image.pollinations.ai / pollinations.ai) */
+      const POLLINATIONS_PROMPT_BASE = 'https://image.pollinations.ai/prompt/';
+      const MAX_UPLOAD_MB = 12;
+      const MAX_BASE64_CHARS = 280000;
+      const GENERATE_TIMEOUT_MS = 180000;
+
+      let sketchDataUrl = '';
+      let sketchBase64Pure = '';
+      let sketchBlob = null;
+      let resultObjectUrl = '';
+      let lastResultUrl = '';
+      let isProcessingSketch = false;
+
+      function setUploadStatus(message, type) {
+        uploadStatus.textContent = message;
+        uploadStatus.className = 'ai-upload-status' + (type ? ' ' + type : '');
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise(function (resolve, reject) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            if (typeof reader.result === 'string' && reader.result.startsWith('data:')) {
+              resolve(reader.result);
+            } else {
+              reject(new Error('El archivo no generó un Data URL válido.'));
+            }
+          };
+          reader.onerror = function () {
+            reject(new Error('No se pudo leer el archivo desde tu computadora.'));
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function compressDataUrl(dataUrl) {
+        return new Promise(function (resolve, reject) {
+          const img = new Image();
+          img.onload = function () {
+            const maxSide = 1024;
+            let w = img.naturalWidth;
+            let h = img.naturalHeight;
+            if (!w || !h) {
+              reject(new Error('La imagen no tiene dimensiones válidas.'));
+              return;
+            }
+            if (w > maxSide || h > maxSide) {
+              const scale = Math.min(maxSide / w, maxSide / h);
+              w = Math.max(1, Math.round(w * scale));
+              h = Math.max(1, Math.round(h * scale));
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let quality = 0.82;
+
+            function renderAndExport() {
+              canvas.width = w;
+              canvas.height = h;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, w, h);
+              ctx.drawImage(img, 0, 0, w, h);
+              return canvas.toDataURL('image/jpeg', quality);
+            }
+
+            let optimized = renderAndExport();
+            while (optimized.length > MAX_BASE64_CHARS && quality > 0.5) {
+              quality -= 0.08;
+              optimized = renderAndExport();
+            }
+            if (optimized.length > MAX_BASE64_CHARS) {
+              w = Math.max(1, Math.round(w * 0.75));
+              h = Math.max(1, Math.round(h * 0.75));
+              quality = 0.72;
+              optimized = renderAndExport();
+            }
+            if (optimized.length > MAX_BASE64_CHARS) {
+              reject(new Error('La imagen sigue siendo muy pesada. Prueba con un archivo más pequeño.'));
+              return;
+            }
+            const comma = optimized.indexOf(',');
+            const pure = comma >= 0 ? optimized.slice(comma + 1) : optimized;
+            canvas.toBlob(function (blob) {
+              if (!blob) {
+                reject(new Error('No se pudo crear el archivo binario del boceto.'));
+                return;
+              }
+              resolve({ dataUrl: optimized, base64: pure, blob: blob });
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = function () {
+            reject(new Error('No se pudo procesar la imagen para la vista previa.'));
+          };
+          img.src = dataUrl;
+        });
+      }
+
+      function dataUrlToBlob(dataUrl) {
+        const parts = dataUrl.split(',');
+        if (parts.length < 2) return null;
+        const mime = (parts[0].match(/data:([^;]+)/) || [])[1] || 'image/jpeg';
+        const bin = atob(parts[1]);
+        const arr = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+        return new Blob([arr], { type: mime });
+      }
+
+      function stripBase64Header(dataUrlOrBase64) {
+        if (!dataUrlOrBase64) return '';
+        if (dataUrlOrBase64.indexOf('base64,') !== -1) {
+          return dataUrlOrBase64.split('base64,')[1];
+        }
+        return dataUrlOrBase64;
+      }
+
+      async function fileToOptimizedSketch(file) {
+        const rawDataUrl = await readFileAsDataUrl(file);
+        return compressDataUrl(rawDataUrl);
+      }
+
+      async function handleSketchFile(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          setUploadStatus('Selecciona un archivo de imagen (JPG, PNG o WEBP).', 'error');
+          return;
+        }
+        if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+          setUploadStatus('El archivo supera ' + MAX_UPLOAD_MB + ' MB. Usa una imagen más liviana.', 'error');
+          return;
+        }
+
+        isProcessingSketch = true;
+        aiGenerateBtn.disabled = true;
+        setUploadStatus('Leyendo y convirtiendo a Base64…', '');
+
+        try {
+          const optimized = await fileToOptimizedSketch(file);
+          sketchDataUrl = optimized.dataUrl;
+          sketchBase64Pure = optimized.base64;
+          sketchBlob = optimized.blob;
+          sketchPreviewImg.src = sketchDataUrl;
+          sketchPreview.classList.add('visible');
+          const sizeKb = Math.round(sketchBlob.size / 1024);
+          setUploadStatus('Boceto listo (Base64 + archivo binario · ~' + sizeKb + ' KB). Puedes generar.', 'ready');
+          aiGenerateBtn.disabled = false;
+        } catch (err) {
+          sketchDataUrl = '';
+          sketchBase64Pure = '';
+          sketchBlob = null;
+          sketchPreview.classList.remove('visible');
+          sketchPreviewImg.removeAttribute('src');
+          setUploadStatus(err.message || 'Error al cargar la imagen.', 'error');
+        } finally {
+          isProcessingSketch = false;
+        }
+      }
+
+      sketchInput.addEventListener('change', function () {
+        if (sketchInput.files && sketchInput.files[0]) {
+          handleSketchFile(sketchInput.files[0]);
+        }
+      });
+
+      uploadZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+      });
+
+      uploadZone.addEventListener('dragleave', function () {
+        uploadZone.classList.remove('dragover');
+      });
+
+      uploadZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) handleSketchFile(file);
+      });
+
+      function randomSeed() {
+        return Math.floor(Math.random() * 999999);
+      }
+
+      function buildPollinationsQuery(extra) {
+        const q = {
+          enhance: aiEnhance.checked ? 'true' : 'false',
+          seed: String(randomSeed()),
+          width: aiWidth.value,
+          height: aiHeight.value,
+          nologo: aiNologo.checked ? 'true' : 'false'
+        };
+        if (extra) Object.assign(q, extra);
+        return new URLSearchParams(q).toString();
+      }
+
+      function buildPollinationsPromptUrl(prompt, extraParams) {
+        return POLLINATIONS_PROMPT_BASE + encodeURIComponent(prompt.trim()) +
+          '?' + buildPollinationsQuery(extraParams);
+      }
+
+      /** GET con imagen referencia: Base64 sin prefijo data:image (la API recibe data URI reconstruida) */
+      function buildPollinationsGetI2IUrl(prompt, base64Pure) {
+        const imageParam = 'data:image/jpeg;base64,' + stripBase64Header(base64Pure);
+        const base = buildPollinationsPromptUrl(prompt, { model: 'kontext' });
+        if (base.length + imageParam.length > 1800000) {
+          throw new Error('El boceto es demasiado grande para envío GET. Se usará POST automático.');
+        }
+        return base + '&image=' + encodeURIComponent(imageParam);
+      }
+
+      function showResultFromBlob(blob) {
+        if (!blob || !blob.type.startsWith('image/')) {
+          throw new Error('La respuesta no es una imagen válida.');
+        }
+        if (resultObjectUrl) URL.revokeObjectURL(resultObjectUrl);
+        resultObjectUrl = URL.createObjectURL(blob);
+        lastResultUrl = resultObjectUrl;
+        aiResult.src = resultObjectUrl;
+        aiResult.hidden = false;
+      }
+
+      function fetchWithTimeout(url, options) {
+        const controller = new AbortController();
+        const timer = setTimeout(function () { controller.abort(); }, GENERATE_TIMEOUT_MS);
+        return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+          .finally(function () { clearTimeout(timer); });
+      }
+
+      /** Método principal: POST multipart (evita URL gigante y "Failed to fetch" por CORS en GET enorme) */
+      async function generateWithFormData(prompt) {
+        if (!sketchBlob) throw new Error('No hay archivo de boceto para enviar.');
+        const url = buildPollinationsPromptUrl(prompt, { model: 'sana' });
+        const form = new FormData();
+        form.append('image', sketchBlob, 'boceto.jpg');
+        const response = await fetchWithTimeout(url, {
+          method: 'POST',
+          body: form,
+          mode: 'cors'
+        });
+        if (!response.ok) {
+          throw new Error('POST Pollinations: error ' + response.status);
+        }
+        return response.blob();
+      }
+
+      /** Respaldo: carga la URL como <img> (no usa fetch; evita "Failed to fetch") */
+      function generateWithImageElement(imageUrl) {
+        return new Promise(function (resolve, reject) {
+          const loader = new Image();
+          const timer = setTimeout(function () {
+            loader.onload = loader.onerror = null;
+            reject(new Error('Tiempo de espera agotado al generar la imagen.'));
+          }, GENERATE_TIMEOUT_MS);
+          loader.onload = function () {
+            clearTimeout(timer);
+            const canvas = document.createElement('canvas');
+            canvas.width = loader.naturalWidth;
+            canvas.height = loader.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(loader, 0, 0);
+            canvas.toBlob(function (blob) {
+              if (blob) resolve(blob);
+              else reject(new Error('No se pudo leer la imagen generada.'));
+            }, 'image/jpeg', 0.92);
+          };
+          loader.onerror = function () {
+            clearTimeout(timer);
+            reject(new Error('No se pudo cargar la imagen desde Pollinations.'));
+          };
+          loader.src = imageUrl;
+        });
+      }
+
+      function showGenerateError(message) {
+        aiLoading.classList.remove('active');
+        aiResult.hidden = true;
+        aiPlaceholder.hidden = false;
+        aiPlaceholder.querySelector('p').textContent = message;
+        aiGenerateBtn.disabled = isProcessingSketch;
+        aiDownloadBtn.disabled = true;
+        aiRegenerateBtn.disabled = !sketchDataUrl;
+      }
+
+      async function generateImage() {
+        const prompt = aiPrompt.value.trim();
+        if (!prompt) return;
+        if (!sketchBlob && !sketchBase64Pure) {
+          setUploadStatus('Sube un boceto antes de generar.', 'error');
+          return;
+        }
+        if (isProcessingSketch) return;
+
+        aiPlaceholder.hidden = true;
+        aiResult.hidden = true;
+        aiLoading.classList.add('active');
+        aiGenerateBtn.disabled = true;
+        aiDownloadBtn.disabled = true;
+        aiRegenerateBtn.disabled = true;
+        setUploadStatus('Enviando boceto a Pollinations.ai (POST)…', '');
+
+        let blob = null;
+        let lastError = null;
+
+        try {
+          blob = await generateWithFormData(prompt);
+          setUploadStatus('Imagen recibida vía POST.', 'ready');
+        } catch (errPost) {
+          lastError = errPost;
+          setUploadStatus('POST falló, probando GET con Base64 (sin prefijo)…', '');
+          try {
+            const getUrl = buildPollinationsGetI2IUrl(prompt, sketchBase64Pure);
+            blob = await generateWithImageElement(getUrl);
+            setUploadStatus('Imagen recibida vía GET.', 'ready');
+          } catch (errGet) {
+            lastError = errGet;
+            setUploadStatus('GET falló, probando fetch GET compacto…', '');
+            try {
+              const getUrl = buildPollinationsGetI2IUrl(prompt, sketchBase64Pure);
+              const res = await fetchWithTimeout(getUrl, { method: 'GET', mode: 'cors' });
+              if (!res.ok) throw new Error('GET error ' + res.status);
+              blob = await res.blob();
+            } catch (errFetch) {
+              lastError = errFetch;
+            }
+          }
+        }
+
+        if (blob) {
+          try {
+            showResultFromBlob(blob);
+            aiLoading.classList.remove('active');
+            aiGenerateBtn.disabled = false;
+            aiDownloadBtn.disabled = false;
+            aiRegenerateBtn.disabled = false;
+            setUploadStatus('Render generado correctamente.', 'ready');
+            return;
+          } catch (e) {
+            lastError = e;
+          }
+        }
+
+        const msg = (lastError && lastError.name === 'AbortError')
+          ? 'La generación tardó demasiado. Intenta de nuevo con un boceto más pequeño.'
+          : ((lastError && lastError.message) ||
+            'No se pudo generar. Abre la página con un servidor local (no solo archivo) o reduce el tamaño del boceto.');
+        showGenerateError(msg);
+        setUploadStatus('Error: ' + (lastError && lastError.message ? lastError.message : 'conexión'), 'error');
+      }
+
+      aiForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        generateImage();
+      });
+
+      aiRegenerateBtn.addEventListener('click', generateImage);
+
+      aiDownloadBtn.addEventListener('click', function () {
+        if (!aiResult.src) return;
+        const a = document.createElement('a');
+        a.href = aiResult.src;
+        a.download = 'alipen-render-' + Date.now() + '.jpg';
+        a.click();
+      });
+    })();
+  </script>
+</body>
+</html>
 # Alipen-Arquitectura
 pagina-web

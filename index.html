@@ -271,6 +271,11 @@
       object-fit: contain;
     }
 
+    .portfolio-card__media img.img-broken,
+    .carousel-slide img.img-broken {
+      opacity: 0.35;
+    }
+
     .portfolio-card__zoom-hint {
       position: absolute;
       top: 0.75rem;
@@ -1089,6 +1094,34 @@
     (function () {
       'use strict';
 
+      /* —— Rutas de imágenes (minúsculas) + fallback .jpg → .png → .JPG —— */
+      const PORTFOLIO_BASE = 'portafolio/';
+      const TALLER_BASE = 'modelos-taller-arq/';
+
+      function imageFallbackCandidates(pathStem) {
+        const stem = pathStem.replace(/\\/g, '/').replace(/\/+$/, '').replace(/\.[^/.]+$/i, '');
+        return [stem + '.jpg', stem + '.png', stem + '.JPG'];
+      }
+
+      function attachImageFallback(img, pathStem) {
+        const candidates = imageFallbackCandidates(pathStem);
+        let step = 0;
+        img.onload = function () {
+          img.dataset.resolvedSrc = img.currentSrc || img.src;
+        };
+        img.onerror = function () {
+          step += 1;
+          if (step < candidates.length) {
+            img.src = candidates[step];
+          } else {
+            img.onerror = null;
+            img.classList.add('img-broken');
+          }
+        };
+        img.src = candidates[0];
+        return img;
+      }
+
       /* —— Menú móvil —— */
       const menuToggle = document.querySelector('.menu-toggle');
       const navUl = document.querySelector('nav ul');
@@ -1097,7 +1130,7 @@
         link.addEventListener('click', () => navUl.classList.remove('open'));
       });
 
-      /* —— Carrusel Taller (13 imágenes en Modelos-taller-arq/) —— */
+      /* —— Carrusel Taller (13 imágenes en modelos-taller-arq/) —— */
       const TALLER_IMAGES = [
         'a.jpg', 'a1.jpg', 'a2.jpg',
         'b.jpg', 'b1.jpg',
@@ -1106,7 +1139,6 @@
         'f.jpg', 'f1.jpg',
         'g.jpg', 'g1.jpg'
       ];
-      const CAROUSEL_BASE = 'Modelos-taller-arq/';
       const carouselEl = document.getElementById('tallerCarousel');
       const captionTitle = document.getElementById('carouselCaptionTitle');
       const captionText = document.getElementById('carouselCaptionText');
@@ -1114,7 +1146,11 @@
       TALLER_IMAGES.forEach(function (file, i) {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
-        slide.innerHTML = '<img src="' + CAROUSEL_BASE + file + '" alt="Modelo taller — ' + file + '">';
+        const img = document.createElement('img');
+        img.alt = 'Modelo taller — ' + file;
+        const stem = TALLER_BASE + file.replace(/\.[^/.]+$/i, '');
+        attachImageFallback(img, stem);
+        slide.appendChild(img);
         carouselEl.appendChild(slide);
       });
 
@@ -1190,24 +1226,49 @@
       const portfolioGallery = document.getElementById('portfolioGallery');
 
       PORTFOLIO_PROJECTS.forEach(function (p) {
-        const src = 'portafolio/proyecto' + p.n + '.jpg';
+        const stem = PORTFOLIO_BASE + 'proyecto' + p.n;
         const card = document.createElement('article');
         card.className = 'portfolio-card';
         card.setAttribute('data-lightbox', '');
-        card.dataset.src = src;
+        card.dataset.src = stem + '.jpg';
         card.dataset.title = p.title;
         card.dataset.desc = p.desc;
-        card.innerHTML =
-          '<div class="portfolio-card__media" role="button" tabindex="0" aria-label="Ampliar ' + p.title + '">' +
-            '<span class="portfolio-card__num">' + p.n + '</span>' +
-            '<img src="' + src + '" alt="' + p.title + ' — ' + p.desc + '" loading="lazy">' +
-            '<span class="portfolio-card__zoom-hint">Clic · Zoom</span>' +
-          '</div>' +
-          '<div class="portfolio-card__body">' +
-            '<span class="portfolio-card__meta">' + p.meta + '</span>' +
-            '<h3>' + p.title + '</h3>' +
-            '<p>' + p.desc + '</p>' +
-          '</div>';
+
+        const media = document.createElement('div');
+        media.className = 'portfolio-card__media';
+        media.setAttribute('role', 'button');
+        media.setAttribute('tabindex', '0');
+        media.setAttribute('aria-label', 'Ampliar ' + p.title);
+
+        const num = document.createElement('span');
+        num.className = 'portfolio-card__num';
+        num.textContent = String(p.n);
+
+        const img = document.createElement('img');
+        img.alt = p.title + ' — ' + p.desc;
+        img.loading = 'lazy';
+        attachImageFallback(img, stem);
+        img.addEventListener('load', function () {
+          card.dataset.src = img.dataset.resolvedSrc || img.src;
+        });
+
+        const hint = document.createElement('span');
+        hint.className = 'portfolio-card__zoom-hint';
+        hint.textContent = 'Clic · Zoom';
+
+        media.appendChild(num);
+        media.appendChild(img);
+        media.appendChild(hint);
+
+        const body = document.createElement('div');
+        body.className = 'portfolio-card__body';
+        body.innerHTML =
+          '<span class="portfolio-card__meta">' + p.meta + '</span>' +
+          '<h3>' + p.title + '</h3>' +
+          '<p>' + p.desc + '</p>';
+
+        card.appendChild(media);
+        card.appendChild(body);
         portfolioGallery.appendChild(card);
       });
 
@@ -1254,8 +1315,11 @@
       }
 
       function openLightbox(card) {
-        lightboxImg.src = card.dataset.src;
-        lightboxImg.alt = card.querySelector('img')?.alt || '';
+        const thumb = card.querySelector('img');
+        const stem = (thumb && thumb.dataset.resolvedSrc) || card.dataset.src || '';
+        const pathStem = stem.replace(/\.[^/.]+$/i, '');
+        attachImageFallback(lightboxImg, pathStem);
+        lightboxImg.alt = thumb?.alt || '';
         lightboxTitle.textContent = card.dataset.title || '';
         lightboxDesc.textContent = card.dataset.desc || '';
         resetZoom();

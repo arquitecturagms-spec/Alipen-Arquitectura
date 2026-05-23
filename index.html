@@ -169,7 +169,7 @@
 
     /* —— Inicio —— */
     .hero-intro {
-      min-height: 70vh;
+      min-height: 80vh;
       display: flex;
       align-items: center;
       padding-top: 7rem;
@@ -335,10 +335,50 @@
       inset: 0;
       background: linear-gradient(to bottom, transparent 40%, var(--bg) 95%);
     }
+
+    /* —— Contacto —— */
+    .contact-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color var(--transition);
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body>
 
+  <!-- Esclusa de navegación -->
   <header>
     <div class="logo">ALIPEN</div>
     <nav>
@@ -346,12 +386,13 @@
         <li><a href="#inicio">Inicio</a></li>
         <li><a href="#portafolio">Portafolio</a></li>
         <li><a href="#taller">Taller IA</a></li>
+        <li><a href="#contacto">Contacto</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <!-- Inicio -->
+    <!-- Esclusa 1: Inicio -->
     <section id="inicio" class="hero-intro">
       <div>
         <span class="section-tag">Arquitectura & Taller IA</span>
@@ -364,16 +405,17 @@
       </div>
     </section>
 
-    <!-- Portafolio (12 Imágenes del 1 al 12) -->
+    <!-- Esclusa 2: Portafolio (Llama a proyecto1.jpg hasta proyecto12.jpg) -->
     <section id="portafolio">
       <div class="section-header">
         <span class="section-tag">Proyectos</span>
         <h2>Nuestras Obras</h2>
-        <p>Explora la galería de diseños arquitectónicos desarrollados por nuestro taller.</p>
+        <p>Explora la galería de diseños arquitectónicos desarrollados por nuestro estudio.</p>
       </div>
 
-      <div class="gallery-grid">
-        <div class="portfolio-card"><span class="portfolio-card__num">01</span><div class="portfolio-card__media"><img src="1.jpg" alt="Proyecto"></div><div class="portfolio-card__body"><span class="portfolio-card__meta">Arquitectura</span><h3>Obra 01</h3><p>Diseño espacial optimizado.</p></div></div>
-        <div class="portfolio-card"><span class="portfolio-card__num">02</span><div class="portfolio-card__media"><img src="2.jpg" alt="Proyecto"></div><div class="portfolio-card__body"><span class="portfolio-card__meta">Arquitectura</span><h3>Obra 02</h3><p>Diseño espacial optimizado.</p></div></div>
-        <div class="portfolio-card"><span class="portfolio-card__num">03</span><div class="portfolio-card__media"><img src="3.jpg" alt="Proyecto"></div><div class="portfolio-card__body"><span class="portfolio-card__meta">Arquitectura</span><h3>Obra 03</h3><p>Diseño espacial optimizado.</p></div></div>
-        <div class="portfolio-card"><span class="portfolio-card__num">04</span><div class="portfolio-card__media"><img src="4.jpg" alt="Proyecto"></div><div class="portfolio-card__body"><span class="portfolio-card__meta">Arquitectura</span><h3>Obra 04</h3><p>Diseño espacial optimizado.</p></div></div>
+      <div class="gallery-grid" id="portfolio-grid">
+        <!-- Espacio reservado para las 12 obras que inyectará el script dinámico -->
+      </div>
+    </section>
+
+    <!-- Esclusa 3: Taller (Carrusel dinámico con tus modelos de letras) -->

@@ -446,7 +446,7 @@
     .carousel-btn--prev { left: 1.5rem; }
     .carousel-btn--next { right: 1.5rem; }
 
-    /* —— Taller: generador Image-to-Image —— */
+    /* —— Taller: generador Stable Diffusion + ControlNet —— */
     .ai-section {
       background: var(--bg-elevated);
       border-radius: var(--radius-lg);
@@ -932,14 +932,14 @@
     <div>
       <span class="section-tag">Estudio de arquitectura</span>
       <h1>Diseño técnico y visualización con IA</h1>
-      <p>Proyectos reales de Alipen.cl y un taller de modelos generativos para transformar bocetos en renders arquitectónicos.</p>
+      <p>Proyectos reales de Alipen.cl y un taller de modelos generativos para transformar bocetos en renders arquitectónicos profesionales.</p>
       <div class="hero-links">
         <!-- Botón 1: Ver Portafolio -->
         <button type="button" class="btn btn-primary" id="btnPortafolio" aria-label="Ir a Portafolio">Ver Portafolio</button>
         <!-- Botón 2: Modelos IA -->
         <button type="button" class="btn btn-outline" id="btnModelos" aria-label="Ir a Modelos IA">Taller / Modelos IA</button>
         <!-- Botón 3: Motor de Renderizado (ControlNet) -->
-        <button type="button" class="btn btn-outline" id="btnMotor" aria-label="Abrir Motor de Renderizado">Motor de Renderizado</button>
+        <button type="button" class="btn btn-outline" id="btnMotor" aria-label="Abrir Motor de Renderizado">Motor de Renderizado IA</button>
       </div>
     </div>
   </section>
@@ -959,7 +959,7 @@
     <div class="section-header">
       <span class="section-tag">Taller</span>
       <h2>Modelos IA & visualización</h2>
-      <p>Renders del taller arquitectónico y motor Image-to-Image con Pollinations.ai para mejorar bocetos subidos.</p>
+      <p>Renders del taller arquitectónico y motor Stable Diffusion + ControlNet para transformar bocetos en renders fotorrealistas controlados.</p>
     </div>
 
     <div class="taller-carousel-wrap" aria-label="Carrusel de renders del taller">
@@ -975,54 +975,59 @@
 
     <div class="taller-ai-wrap">
       <div class="ai-section">
-        <span class="ai-badge">✦ Image-to-Image · Pollinations.ai · modelo kontext</span>
+        <span class="ai-badge">✦ Stable Diffusion XL · ControlNet Canny · Detección de Bordes</span>
         <form class="ai-form" id="aiForm">
           <div class="ai-upload-zone" id="uploadZone">
             <input type="file" id="sketchInput" accept="image/*" aria-label="Subir boceto">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
             </svg>
-            <p><strong>Sube tu boceto</strong> (JPG, PNG, WEBP)</p>
+            <p><strong>Sube tu boceto arquitectónico</strong> (JPG, PNG, WEBP)</p>
             <p>Arrastra aquí o haz clic para seleccionar</p>
           </div>
           <div class="ai-sketch-preview" id="sketchPreview">
             <img id="sketchPreviewImg" alt="Vista previa del boceto">
           </div>
           <p class="ai-upload-status" id="uploadStatus" aria-live="polite"></p>
-          <label for="aiPrompt">Instrucción de mejora (prompt)</label>
-          <textarea id="aiPrompt" rows="3" required placeholder="Ej.: transformar en render fotorrealista, luz natural, materiales de madera y vidrio, estilo arquitectónico contemporáneo">mejorar boceto arquitectónico a render fotorrealista profesional, luz diurna suave, materiales realistas, alta definición</textarea>
+          <label for="aiPrompt">Instrucción de mejora (prompt arquitectónico)</label>
+          <textarea id="aiPrompt" rows="3" required placeholder="Ej.: Elevación arquitectónica profesional, vista frontal de fachada, materiales: hormigón visto, paneles de madera y vidrio, ventanas alineadas, iluminación natural, cielo despejado, estilo ArchDaily, fotorrealista 8k">Elevación arquitectónica profesional, vista frontal de fachada 2D, alzado arquitectónico detallado, materiales de fachada realistas [hormigón visto, paneles de madera y vidrio], ventanas alineadas según modulación, iluminación de luz natural difusa, cielo despejado de fondo, vegetación perimetral realista en escala, renderizado fotorrealista de planos técnicos, estilo ArchDaily, resolución 8k</textarea>
           <div class="ai-form-row">
             <select id="aiWidth" aria-label="Ancho">
+              <option value="512">512px</option>
               <option value="768">768px</option>
               <option value="1024" selected>1024px</option>
             </select>
             <select id="aiHeight" aria-label="Alto">
+              <option value="512">512px</option>
               <option value="768" selected>768px</option>
               <option value="1024">1024px</option>
             </select>
+            <button type="submit" class="btn btn-primary" style="padding: 0.9rem 1.5rem;">Renderizar</button>
           </div>
           <div class="ai-options">
-            <label><input type="checkbox" id="aiNologo" checked> Sin logo</label>
-            <label><input type="checkbox" id="aiEnhance" checked> Mejorar prompt</label>
+            <label>
+              <input type="checkbox" id="useControlNet" checked> ControlNet Canny (detección de bordes)
+            </label>
+            <label>
+              <input type="checkbox" id="useNegativePrompt" checked> Aplicar prompt negativo
+            </label>
           </div>
-          <button type="submit" class="btn btn-primary" id="aiGenerateBtn">Mejorar boceto con IA</button>
         </form>
         <div class="ai-preview" id="aiPreview">
-          <div class="ai-preview-placeholder" id="aiPlaceholder">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <div class="ai-preview-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
-            <p>Sube un boceto y genera el render mejorado aquí</p>
+            <p>Tu render aparecerá aquí</p>
           </div>
-          <img id="aiResult" alt="Render mejorado por IA" hidden>
           <div class="ai-loading" id="aiLoading">
             <div class="spinner"></div>
-            <p>Procesando Image-to-Image con Pollinations.ai…</p>
+            <p>Procesando imagen con ControlNet...</p>
           </div>
         </div>
-        <div class="ai-actions">
-          <button type="button" class="btn btn-outline" id="aiDownloadBtn" disabled>Descargar</button>
-          <button type="button" class="btn btn-outline" id="aiRegenerateBtn" disabled>Regenerar</button>
+        <div class="ai-actions" id="aiActions" style="display:none;">
+          <button type="button" class="btn btn-primary" id="downloadRender" aria-label="Descargar render">⬇ Descargar</button>
+          <button type="button" class="btn btn-outline" id="clearRender" aria-label="Limpiar">Limpiar</button>
         </div>
       </div>
     </div>
@@ -1031,20 +1036,21 @@
   <!-- Sobre mí -->
   <section id="sobre">
     <div class="section-header">
-      <h2>Sobre el estudio</h2>
-      <p>Arquitectura técnica, documentación de obra y apoyo visual con inteligencia artificial.</p>
+      <span class="section-tag">Alipen.cl</span>
+      <h2>Sobre nosotros</h2>
     </div>
     <div class="about-grid">
       <div class="about-text">
-        <h3>Alipen — diseño y obra</h3>
-        <p>Desarrollo proyectos residenciales y comerciales con foco en planos legibles, cumplimiento normativo y presentación clara al cliente.</p>
-        <p>El taller de modelos IA complementa el proceso: desde boceto manual hasta render listo para revisión.</p>
+        <h3>Arquitectura e IA</h3>
+        <p>Alipen.cl integra más de una década de experiencia en arquitectura con tecnologías de última generación en inteligencia artificial para visualización y renderizado.</p>
+        <p>Nuestro taller de IA utiliza Stable Diffusion con ControlNet para generar renders arquitectónicos precisos desde bocetos, manteniendo control sobre detalles estructurales y estéticos.</p>
         <div class="skills">
-          <span class="skill-tag">Planos DWG/PDF</span>
-          <span class="skill-tag">Residencial</span>
-          <span class="skill-tag">Comercial</span>
-          <span class="skill-tag">Renders IA</span>
-          <span class="skill-tag">Image-to-Image</span>
+          <span class="skill-tag">Diseño Arquitectónico</span>
+          <span class="skill-tag">Renderizado 3D</span>
+          <span class="skill-tag">IA Generativa</span>
+          <span class="skill-tag">ControlNet</span>
+          <span class="skill-tag">Stable Diffusion</span>
+          <span class="skill-tag">Visualización</span>
         </div>
       </div>
     </div>
@@ -1052,44 +1058,41 @@
 
   <!-- Contacto -->
   <section id="contacto">
-    <div class="section-header">
-      <span class="section-tag">Contacto</span>
-      <h2>Hablemos de tu proyecto</h2>
-      <p>Consultas por planos, remodelaciones, regularizaciones o visualización con IA.</p>
-    </div>
     <div class="contact-card">
-      <p>Escríbeme directamente y te responderé a la brevedad.</p>
-      <a href="mailto:gonzalo@alipen.cl?subject=Consulta%20desde%20Alipen.cl" class="btn btn-primary btn-email">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <h2 style="margin-bottom: 1rem;">¿Listo para tu proyecto?</h2>
+      <p>Contáctame para discutir tus necesidades de diseño arquitectónico y visualización con IA.</p>
+      <a href="mailto:contacto@alipen.cl" class="btn btn-email">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
-        Contactar por Email
+        Enviar correo
       </a>
-      <a href="mailto:gonzalo@alipen.cl" class="contact-email-link">gonzalo@alipen.cl</a>
+      <a href="mailto:contacto@alipen.cl" class="contact-email-link">contacto@alipen.cl</a>
     </div>
   </section>
 
   <footer>
-    <p>© 2026 <a href="https://alipen.cl" target="_blank" rel="noopener">Alipen.cl</a> · Renders IA con <a href="https://pollinations.ai" target="_blank" rel="noopener">Pollinations.ai</a></p>
-    <p class="footer-email">Correo: <a href="mailto:gonzalo@alipen.cl">gonzalo@alipen.cl</a></p>
+    <p>© 2025 Alipen.cl — Arquitectura & Taller IA. Todos los derechos reservados.</p>
+    <div class="footer-email">
+      <a href="mailto:contacto@alipen.cl">contacto@alipen.cl</a>
+    </div>
   </footer>
 
-  <!-- Lightbox con zoom -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visor de plano">
-    <button type="button" class="lightbox-close" aria-label="Cerrar">×</button>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Cerrar">✕</button>
     <div class="lightbox-toolbar">
       <button type="button" id="zoomOut" aria-label="Alejar">−</button>
-      <span class="lightbox-zoom-label" id="zoomLevel">100%</span>
+      <span class="lightbox-zoom-label" id="zoomLabel">100%</span>
       <button type="button" id="zoomIn" aria-label="Acercar">+</button>
-      <button type="button" id="zoomReset" aria-label="Restablecer zoom" title="Restablecer">⟲</button>
     </div>
     <div class="lightbox-viewport" id="lightboxViewport">
-      <img src="" alt="" id="lightboxImg">
+      <img id="lightboxImg" alt="">
     </div>
     <div class="lightbox-caption">
       <h4 id="lightboxTitle"></h4>
-      <p id="lightboxDesc"></p>
-      <p class="lightbox-hint">Clic en la imagen · rueda del ratón · botones +/− · arrastrar cuando hay zoom</p>
+      <p id="lightboxDescription"></p>
+      <p class="lightbox-hint">Usa rueda del ratón para zoom · Arrastra para mover</p>
     </div>
   </div>
 
@@ -1100,37 +1103,48 @@
       const PORTFOLIO_BASE = 'portafolio/';
       const TALLER_BASE = 'modelos-taller-arq/';
 
-      // Configuración de prompts para cada botón (Motor de Renderizado con ControlNet)
-      const MOTOR_CONTROLNET_CONFIG = {
-        portafolio: {
-          name: 'Portafolio',
-          prompt: 'render arquitectónico profesional, planos técnicos, alzados y cortes, lineas limpias, escala técnica, croquis profesional, documentación de obra',
-          preprocesador: 'canny',
-          apiUrl: 'http://127.0.0.1:7860/api/v1/txt2img',
-          steps: 32,
-          guidanceScale: 7.5
-        },
-        modelos: {
-          name: 'Modelos IA',
-          prompt: 'render 3d fotorrealista, iluminación profesional, materiales realistas, perspectiva arquitectónica, presentación high-end, render de proyecto',
-          preprocesador: 'canny',
-          apiUrl: 'http://127.0.0.1:7860/api/v1/txt2img',
-          steps: 40,
-          guidanceScale: 8.0
-        },
-        motor: {
-          name: 'Motor de Renderizado',
-          prompt: 'imagen de arquitectura procesada con ControlNet Canny, estilo fotorrealista, luz natural, materiales de calidad, detalles constructivos, presentación profesional',
-          preprocesador: 'canny',
-          apiUrl: 'http://127.0.0.1:7860/api/v1/controlnet/txt2img',
-          steps: 50,
-          guidanceScale: 9.0
-        }
+      // Configuración de Stable Diffusion + ControlNet para renderizado arquitectónico
+      const STABLE_DIFFUSION_CONFIG = {
+        // API LOCAL: http://127.0.0.1:7860 (ComfyUI o similar)
+        // API REMOTA: https://api.replicate.com/v1 (Replicate)
+        apiUrl: 'http://127.0.0.1:7860/api/v1/txt2img',
+        controlnetUrl: 'http://127.0.0.1:7860/api/v1/controlnet_detect',
+        model: 'stabilityai/stable-diffusion-xl-base-1.0',
+        controlnet: 'lllyasviel/control_v11p_sd15_canny',
+        steps: 50,
+        guidanceScale: 7.5,
+        strength: 0.9,
+        negativePrompt: 'boceto a mano, líneas torcidas, baja calidad, sombras interiores, mobiliario interior visible, texto, cotas, personas deformadas, imágenes viejas o de mala calidad, sin color y sin texturas, render pobre, detalles borrosos'
       };
+
+      // Datos del portafolio (11 proyectos)
+      const PORTFOLIO_DATA = [
+        { num: 1, img: 'proyecto1.jpg', title: 'Casa Familiar', description: 'Vista Interior, en Madera' },
+        { num: 2, img: 'proyecto2.jpg', title: 'Quicho Madera', description: 'Vista Interior, en Acero y Madera' },
+        { num: 3, img: 'proyecto3.jpg', title: 'Depto Piloto', description: 'Vista Interior, Detalles' },
+        { num: 4, img: 'proyecto4.jpg', title: 'Remodelación Cocina', description: 'Vista Interior, en Lamitech' },
+        { num: 5, img: 'proyecto5.jpg', title: 'Edificación Cooperativa', description: 'Vista Exterior e Interior, Hormigón' },
+        { num: 6, img: 'proyecto6.jpg', title: 'Remodelación Fachada', description: 'Vista Exterior, Quadroline' },
+        { num: 7, img: 'proyecto7.jpg', title: 'Restauración Cubierta', description: 'Vistas, Elastómero' },
+        { num: 8, img: 'proyecto8.jpg', title: 'Ing. Municipales', description: 'Vivienda, Planos Arq.' },
+        { num: 9, img: 'proyecto9.jpg', title: 'Ing. Municipales', description: 'Galpón Industrial, Planos Arq.' },
+        { num: 10, img: 'proyecto10.jpg', title: 'Ing. Municipales', description: 'Galpón Industrial, Planos Arq.' },
+        { num: 11, img: 'proyecto11.jpg', title: 'Remodelación Biblioteca', description: 'Vista Interior, Detalles' }
+      ];
+
+      // Datos del taller (13 imágenes)
+      const TALLER_IMAGES = [
+        'a.jpg', 'a1.jpg', 'a2.jpg',
+        'b.jpg', 'b1.jpg',
+        'c.jpg', 'c1.jpg',
+        'e.jpg', 'e1.jpg',
+        'f.jpg', 'f1.jpg',
+        'g.jpg', 'g1.jpg'
+      ];
 
       function imageFallbackCandidates(pathStem) {
         const stem = pathStem.replace(/\\/g, '/').replace(/\/+$/, '').replace(/\.[^/.]+$/i, '');
-        return [stem + '.jpg', stem + '.png', stem + '.JPG'];
+        return [stem + '.jpg', stem + '.png', stem + '.JPG', stem + '.webp'];
       }
 
       function attachImageFallback(img, pathStem) {
@@ -1161,670 +1175,318 @@
       });
 
       /* —— Carrusel Taller (13 imágenes) —— */
-      const TALLER_IMAGES = [
-        'a.jpg', 'a1.jpg', 'a2.jpg',
-        'b.jpg', 'b1.jpg',
-        'c.jpg', 'c1.jpg',
-        'e.jpg', 'e1.jpg',
-        'f.jpg', 'f1.jpg',
-        'g.jpg', 'g1.jpg'
-      ];
       const carouselEl = document.getElementById('tallerCarousel');
-      const captionTitle = document.getElementById('carouselCaptionTitle');
-      const captionText = document.getElementById('carouselCaptionText');
+      const carouselPrevBtn = document.getElementById('carouselPrev');
+      const carouselNextBtn = document.getElementById('carouselNext');
+      const carouselDotsEl = document.getElementById('carouselDots');
+      let carouselIndex = 0;
 
-      TALLER_IMAGES.forEach(function (file, i) {
+      TALLER_IMAGES.forEach((img, idx) => {
         const slide = document.createElement('div');
-        slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
-        const img = document.createElement('img');
-        img.alt = 'Modelo taller — ' + file;
-        const stem = TALLER_BASE + file.replace(/\.[^/.]+$/i, '');
-        attachImageFallback(img, stem);
-        slide.appendChild(img);
+        slide.className = 'carousel-slide' + (idx === 0 ? ' active' : '');
+        const imgEl = document.createElement('img');
+        attachImageFallback(imgEl, TALLER_BASE + img);
+        imgEl.alt = `Modelo del taller ${idx + 1}`;
+        slide.appendChild(imgEl);
         carouselEl.appendChild(slide);
-      });
 
-      let slides = carouselEl.querySelectorAll('.carousel-slide');
-      const dotsContainer = document.getElementById('carouselDots');
-      const carouselPrev = document.getElementById('carouselPrev');
-      const carouselNext = document.getElementById('carouselNext');
-      let currentSlide = 0;
-      let carouselInterval;
-      const CAROUSEL_DELAY = 6000;
-
-      function updateCarouselCaption() {
-        const file = TALLER_IMAGES[currentSlide];
-        const num = currentSlide + 1;
-        captionTitle.textContent = 'Modelo ' + file.replace('.jpg', '');
-        captionText.textContent = 'Imagen ' + num + ' de ' + TALLER_IMAGES.length + ' · ' + file;
-      }
-
-      updateCarouselCaption();
-
-      slides.forEach((_, i) => {
         const dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-        dot.setAttribute('aria-label', 'Ir a slide ' + (i + 1));
-        dot.addEventListener('click', () => { goToSlide(i); resetCarousel(); });
-        dotsContainer.appendChild(dot);
+        dot.className = 'carousel-dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('role', 'tab');
+        dot.setAttribute('aria-label', `Ir a slide ${idx + 1}`);
+        dot.addEventListener('click', () => goToSlide(idx));
+        carouselDotsEl.appendChild(dot);
       });
 
-      const dots = dotsContainer.querySelectorAll('.carousel-dot');
-
-      function goToSlide(index) {
-        slides[currentSlide].classList.remove('active');
-        dots[currentSlide].classList.remove('active');
-        currentSlide = (index + slides.length) % slides.length;
-        slides[currentSlide].classList.add('active');
-        dots[currentSlide].classList.add('active');
-        updateCarouselCaption();
+      function goToSlide(idx) {
+        const slides = carouselEl.querySelectorAll('.carousel-slide');
+        const dots = carouselDotsEl.querySelectorAll('.carousel-dot');
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        slides[idx].classList.add('active');
+        dots[idx].classList.add('active');
+        carouselIndex = idx;
       }
 
-      function nextSlide() { goToSlide(currentSlide + 1); }
-      function prevSlide() { goToSlide(currentSlide - 1); }
-
-      function startCarousel() {
-        carouselInterval = setInterval(nextSlide, CAROUSEL_DELAY);
+      function nextSlide() {
+        goToSlide((carouselIndex + 1) % TALLER_IMAGES.length);
       }
 
-      function resetCarousel() {
-        clearInterval(carouselInterval);
-        startCarousel();
+      function prevSlide() {
+        goToSlide((carouselIndex - 1 + TALLER_IMAGES.length) % TALLER_IMAGES.length);
       }
 
-      carouselPrev?.addEventListener('click', () => { prevSlide(); resetCarousel(); });
-      carouselNext?.addEventListener('click', () => { nextSlide(); resetCarousel(); });
-      startCarousel();
+      carouselPrevBtn?.addEventListener('click', prevSlide);
+      carouselNextBtn?.addEventListener('click', nextSlide);
+      setInterval(nextSlide, 5000);
 
-      /* —— Galería: 12 proyectos —— */
-      const PORTFOLIO_PROJECTS = [
-        { n: 1, title: 'Interior proyecto Casa Familiar', desc: 'Vistas interiores', meta: 'Interior · Residencial' },
-        { n: 2, title: 'Interior Quincho Madera', desc: 'Vistas interiores', meta: 'Interior · Quincho' },
-        { n: 3, title: 'Depto. Piloto Plaza Egaña', desc: 'Vistas interiores', meta: 'Interior · Departamento' },
-        { n: 4, title: 'Cocina Vivienda', desc: 'Vistas remodelación interior', meta: 'Interior · Remodelación' },
-        { n: 5, title: 'Edificio Cooperativa', desc: 'Vistas exteriores e interiores', meta: 'Edificación · Cooperativa' },
-        { n: 6, title: 'Remodelación fachada Mutual CCHC', desc: 'Vistas exteriores', meta: 'Fachada · Institucional' },
-        { n: 7, title: 'Restauración de cubierta Edificación', desc: 'Vistas', meta: 'Restauración · Cubierta' },
-        { n: 8, title: 'Planos Municipales aprobados, Regularizaciones', desc: 'Documentación técnica municipal', meta: 'Planos · Regularización' },
-        { n: 9, title: 'Planos Municipales Planta de local Comercial', desc: 'Planta y normativa comercial', meta: 'Planos · Comercial' },
-        { n: 10, title: 'Planos Municipales Planta Industrial', desc: 'Planta y uso industrial', meta: 'Planos · Industrial' },
-        { n: 11, title: 'Diseño Interiores, remodelación Biblioteca', desc: 'Propuesta y vistas interiores', meta: 'Interior · Biblioteca' },
-        { n: 12, title: 'Restauración Edificación en zona Patrimonial', desc: 'Vistas y documentación patrimonial', meta: 'Restauración · Patrimonio' }
-      ];
-
+      /* —— Portafolio Gallery —— */
       const portfolioGallery = document.getElementById('portfolioGallery');
-
-      PORTFOLIO_PROJECTS.forEach(function (p) {
-        const stem = PORTFOLIO_BASE + 'proyecto' + p.n;
-        const card = document.createElement('article');
+      PORTFOLIO_DATA.forEach(proj => {
+        const card = document.createElement('div');
         card.className = 'portfolio-card';
-        card.setAttribute('data-lightbox', '');
-        card.dataset.src = stem + '.jpg';
-        card.dataset.title = p.title;
-        card.dataset.desc = p.desc;
-
-        const media = document.createElement('div');
-        media.className = 'portfolio-card__media';
-        media.setAttribute('role', 'button');
-        media.setAttribute('tabindex', '0');
-        media.setAttribute('aria-label', 'Ampliar ' + p.title);
-
-        const num = document.createElement('span');
-        num.className = 'portfolio-card__num';
-        num.textContent = String(p.n);
-
-        const img = document.createElement('img');
-        img.alt = p.title + ' — ' + p.desc;
-        img.loading = 'lazy';
-        attachImageFallback(img, stem);
-        img.addEventListener('load', function () {
-          card.dataset.src = img.dataset.resolvedSrc || img.src;
-        });
-
-        const hint = document.createElement('span');
-        hint.className = 'portfolio-card__zoom-hint';
-        hint.textContent = 'Clic · Zoom';
-
-        media.appendChild(num);
-        media.appendChild(img);
-        media.appendChild(hint);
-
-        const body = document.createElement('div');
-        body.className = 'portfolio-card__body';
-        body.innerHTML =
-          '<span class="portfolio-card__meta">' + p.meta + '</span>' +
-          '<h3>' + p.title + '</h3>' +
-          '<p>' + p.desc + '</p>';
-
-        card.appendChild(media);
-        card.appendChild(body);
+        card.innerHTML = `
+          <div class="portfolio-card__num">${proj.num}</div>
+          <div class="portfolio-card__media">
+            <img class="portfolio-img" alt="${proj.title}">
+            <div class="portfolio-card__zoom-hint">ZOOM</div>
+          </div>
+          <div class="portfolio-card__body">
+            <div class="portfolio-card__meta">${proj.title}</div>
+            <h3>${proj.title}</h3>
+            <p>${proj.description}</p>
+          </div>
+        `;
+        const img = card.querySelector('img');
+        attachImageFallback(img, PORTFOLIO_BASE + proj.img);
+        img.addEventListener('click', () => openLightbox(img, proj.title, proj.description));
         portfolioGallery.appendChild(card);
       });
 
-      /* —— Lightbox + zoom —— */
+      /* —— Lightbox —— */
       const lightbox = document.getElementById('lightbox');
       const lightboxImg = document.getElementById('lightboxImg');
-      const lightboxViewport = document.getElementById('lightboxViewport');
       const lightboxTitle = document.getElementById('lightboxTitle');
-      const lightboxDesc = document.getElementById('lightboxDesc');
-      const zoomLevelEl = document.getElementById('zoomLevel');
-      const zoomInBtn = document.getElementById('zoomIn');
-      const zoomOutBtn = document.getElementById('zoomOut');
-      const zoomResetBtn = document.getElementById('zoomReset');
-      const lightboxClose = lightbox.querySelector('.lightbox-close');
-
-      const ZOOM_MIN = 1;
-      const ZOOM_MAX = 4;
-      const ZOOM_STEP = 0.35;
-      let scale = 1;
-      let panX = 0;
-      let panY = 0;
+      const lightboxDesc = document.getElementById('lightboxDescription');
+      const lightboxViewport = document.getElementById('lightboxViewport');
+      const lightboxClose = document.getElementById('lightboxClose');
+      const zoomIn = document.getElementById('zoomIn');
+      const zoomOut = document.getElementById('zoomOut');
+      const zoomLabel = document.getElementById('zoomLabel');
+      let currentZoom = 1;
       let isDragging = false;
-      let dragStartX = 0;
-      let dragStartY = 0;
-      let panStartX = 0;
-      let panStartY = 0;
+      let dragX = 0, dragY = 0;
 
-      function applyTransform() {
-        lightboxImg.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + ')';
-        zoomLevelEl.textContent = Math.round(scale * 100) + '%';
-      }
-
-      function resetZoom() {
-        scale = 1;
-        panX = 0;
-        panY = 0;
-        applyTransform();
-      }
-
-      function setZoom(newScale) {
-        scale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, newScale));
-        if (scale === 1) { panX = 0; panY = 0; }
-        applyTransform();
-      }
-
-      function openLightbox(card) {
-        const thumb = card.querySelector('img');
-        const stem = (thumb && thumb.dataset.resolvedSrc) || card.dataset.src || '';
-        const pathStem = stem.replace(/\.[^/.]+$/i, '');
-        attachImageFallback(lightboxImg, pathStem);
-        lightboxImg.alt = thumb?.alt || '';
-        lightboxTitle.textContent = card.dataset.title || '';
-        lightboxDesc.textContent = card.dataset.desc || '';
-        resetZoom();
+      function openLightbox(imgEl, title, description) {
+        lightboxImg.src = imgEl.dataset.resolvedSrc || imgEl.src;
+        lightboxTitle.textContent = title;
+        lightboxDesc.textContent = description;
         lightbox.classList.add('open');
-        document.body.style.overflow = 'hidden';
+        currentZoom = 1;
+        updateZoom();
       }
 
-      function closeLightbox() {
-        lightbox.classList.remove('open');
-        document.body.style.overflow = '';
-        resetZoom();
+      function updateZoom() {
+        lightboxImg.style.transform = `scale(${currentZoom})`;
+        zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
       }
 
-      document.querySelectorAll('[data-lightbox]').forEach(card => {
-        const trigger = card.querySelector('.portfolio-card__media');
-        const open = () => openLightbox(card);
-        trigger?.addEventListener('click', open);
-        trigger?.addEventListener('keydown', e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            open();
-          }
-        });
+      lightboxClose.addEventListener('click', () => lightbox.classList.remove('open'));
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) lightbox.classList.remove('open');
       });
 
-      lightboxClose.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', e => {
-        if (e.target === lightbox || e.target === lightboxViewport) closeLightbox();
+      zoomIn.addEventListener('click', () => {
+        currentZoom += 0.1;
+        updateZoom();
       });
 
-      lightboxImg.addEventListener('click', e => {
-        e.stopPropagation();
-        setZoom(scale >= ZOOM_MAX ? 1 : scale + ZOOM_STEP);
+      zoomOut.addEventListener('click', () => {
+        currentZoom = Math.max(1, currentZoom - 0.1);
+        updateZoom();
       });
 
-      zoomInBtn.addEventListener('click', e => { e.stopPropagation(); setZoom(scale + ZOOM_STEP); });
-      zoomOutBtn.addEventListener('click', e => { e.stopPropagation(); setZoom(scale - ZOOM_STEP); });
-      zoomResetBtn.addEventListener('click', e => { e.stopPropagation(); resetZoom(); });
-
-      lightboxViewport.addEventListener('wheel', e => {
-        if (!lightbox.classList.contains('open')) return;
+      lightboxViewport.addEventListener('wheel', (e) => {
         e.preventDefault();
-        setZoom(scale + (e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP));
-      }, { passive: false });
-
-      lightboxViewport.addEventListener('mousedown', e => {
-        if (scale <= 1) return;
-        isDragging = true;
-        lightboxViewport.classList.add('dragging');
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        panStartX = panX;
-        panStartY = panY;
+        currentZoom += e.deltaY > 0 ? -0.1 : 0.1;
+        currentZoom = Math.max(1, Math.min(3, currentZoom));
+        updateZoom();
       });
 
-      window.addEventListener('mousemove', e => {
+      lightboxViewport.addEventListener('mousedown', () => { isDragging = true; });
+      lightboxViewport.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        panX = panStartX + (e.clientX - dragStartX);
-        panY = panStartY + (e.clientY - dragStartY);
-        applyTransform();
+        lightboxViewport.classList.add('dragging');
+        dragX += e.movementX;
+        dragY += e.movementY;
+        lightboxImg.style.transform = `scale(${currentZoom}) translate(${dragX}px, ${dragY}px)`;
+      });
+      lightboxViewport.addEventListener('mouseup', () => { isDragging = false; lightboxViewport.classList.remove('dragging'); });
+
+      /* —— Botones de navegación —— */
+      document.getElementById('btnPortafolio')?.addEventListener('click', () => {
+        document.getElementById('portafolio').scrollIntoView({ behavior: 'smooth' });
+      });
+      document.getElementById('btnModelos')?.addEventListener('click', () => {
+        document.getElementById('taller').scrollIntoView({ behavior: 'smooth' });
       });
 
-      window.addEventListener('mouseup', () => {
-        isDragging = false;
-        lightboxViewport.classList.remove('dragging');
-      });
-
-      document.addEventListener('keydown', e => {
-        if (!lightbox.classList.contains('open')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === '+' || e.key === '=') setZoom(scale + ZOOM_STEP);
-        if (e.key === '-') setZoom(scale - ZOOM_STEP);
-        if (e.key === '0') resetZoom();
-      });
-
-      /* —— Botones principales —— */
-      const btnPortafolio = document.getElementById('btnPortafolio');
-      const btnModelos = document.getElementById('btnModelos');
-      const btnMotor = document.getElementById('btnMotor');
-
-      btnPortafolio.addEventListener('click', () => {
-        window.location.hash = '#portafolio';
-      });
-
-      btnModelos.addEventListener('click', () => {
-        window.location.hash = '#taller';
-      });
-
-      btnMotor.addEventListener('click', () => {
-        abrirMotorRenderizado();
-      });
-
-      function abrirMotorRenderizado() {
-        const config = MOTOR_CONTROLNET_CONFIG.motor;
-        console.log('🚀 Motor de Renderizado Activado');
-        console.log('Configuración de ControlNet:', config);
-
-        alert(
-          '⚙️ Motor de Renderizado ControlNet\n\n' +
-          'Preprocesador: ' + config.preprocesador + '\n' +
-          'API: ' + config.apiUrl + '\n' +
-          'Pasos: ' + config.steps + '\n' +
-          'Guidance Scale: ' + config.guidanceScale + '\n\n' +
-          'Prompt base: ' + config.prompt + '\n\n' +
-          'Asegúrate de que Automatic1111 esté ejecutándose en ' + config.apiUrl
-        );
-      }
-
-      /* —— Image-to-Image Pollinations —— */
+      /* —— Motor Stable Diffusion + ControlNet —— */
       const aiForm = document.getElementById('aiForm');
-      const sketchInput = document.getElementById('sketchInput');
       const uploadZone = document.getElementById('uploadZone');
-      const uploadStatus = document.getElementById('uploadStatus');
+      const sketchInput = document.getElementById('sketchInput');
       const sketchPreview = document.getElementById('sketchPreview');
       const sketchPreviewImg = document.getElementById('sketchPreviewImg');
-      const aiPrompt = document.getElementById('aiPrompt');
-      const aiWidth = document.getElementById('aiWidth');
-      const aiHeight = document.getElementById('aiHeight');
-      const aiNologo = document.getElementById('aiNologo');
-      const aiEnhance = document.getElementById('aiEnhance');
-      const aiResult = document.getElementById('aiResult');
-      const aiPlaceholder = document.getElementById('aiPlaceholder');
+      const uploadStatus = document.getElementById('uploadStatus');
+      const aiPreview = document.getElementById('aiPreview');
       const aiLoading = document.getElementById('aiLoading');
-      const aiDownloadBtn = document.getElementById('aiDownloadBtn');
-      const aiRegenerateBtn = document.getElementById('aiRegenerateBtn');
-      const aiGenerateBtn = document.getElementById('aiGenerateBtn');
+      const aiActions = document.getElementById('aiActions');
+      const downloadRender = document.getElementById('downloadRender');
+      const clearRender = document.getElementById('clearRender');
+      const aiPrompt = document.getElementById('aiPrompt');
+      const useControlNet = document.getElementById('useControlNet');
+      const useNegativePrompt = document.getElementById('useNegativePrompt');
 
-      const POLLINATIONS_PROMPT_BASE = 'https://image.pollinations.ai/prompt/';
-      const MAX_UPLOAD_MB = 12;
-      const MAX_BASE64_CHARS = 280000;
-      const GENERATE_TIMEOUT_MS = 180000;
+      let uploadedImage = null;
+      let generatedImageUrl = null;
 
-      let sketchDataUrl = '';
-      let sketchBase64Pure = '';
-      let sketchBlob = null;
-      let resultObjectUrl = '';
-      let lastResultUrl = '';
-      let isProcessingSketch = false;
-
-      function setUploadStatus(message, type) {
-        uploadStatus.textContent = message;
-        uploadStatus.className = 'ai-upload-status' + (type ? ' ' + type : '');
-      }
-
-      function readFileAsDataUrl(file) {
-        return new Promise(function (resolve, reject) {
-          const reader = new FileReader();
-          reader.onload = function () {
-            if (typeof reader.result === 'string' && reader.result.startsWith('data:')) {
-              resolve(reader.result);
-            } else {
-              reject(new Error('El archivo no generó un Data URL válido.'));
-            }
-          };
-          reader.onerror = function () {
-            reject(new Error('No se pudo leer el archivo desde tu computadora.'));
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      function compressDataUrl(dataUrl) {
-        return new Promise(function (resolve, reject) {
-          const img = new Image();
-          img.onload = function () {
-            const maxSide = 1024;
-            let w = img.naturalWidth;
-            let h = img.naturalHeight;
-            if (!w || !h) {
-              reject(new Error('La imagen no tiene dimensiones válidas.'));
-              return;
-            }
-            if (w > maxSide || h > maxSide) {
-              const scale = Math.min(maxSide / w, maxSide / h);
-              w = Math.max(1, Math.round(w * scale));
-              h = Math.max(1, Math.round(h * scale));
-            }
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            let quality = 0.82;
-
-            function renderAndExport() {
-              canvas.width = w;
-              canvas.height = h;
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, w, h);
-              ctx.drawImage(img, 0, 0, w, h);
-              return canvas.toDataURL('image/jpeg', quality);
-            }
-
-            let optimized = renderAndExport();
-            while (optimized.length > MAX_BASE64_CHARS && quality > 0.5) {
-              quality -= 0.08;
-              optimized = renderAndExport();
-            }
-            if (optimized.length > MAX_BASE64_CHARS) {
-              w = Math.max(1, Math.round(w * 0.75));
-              h = Math.max(1, Math.round(h * 0.75));
-              quality = 0.72;
-              optimized = renderAndExport();
-            }
-            if (optimized.length > MAX_BASE64_CHARS) {
-              reject(new Error('La imagen sigue siendo muy pesada. Prueba con un archivo más pequeño.'));
-              return;
-            }
-            const comma = optimized.indexOf(',');
-            const pure = comma >= 0 ? optimized.slice(comma + 1) : optimized;
-            canvas.toBlob(function (blob) {
-              if (!blob) {
-                reject(new Error('No se pudo crear el archivo binario del boceto.'));
-                return;
-              }
-              resolve({ dataUrl: optimized, base64: pure, blob: blob });
-            }, 'image/jpeg', quality);
-          };
-          img.onerror = function () {
-            reject(new Error('No se pudo procesar la imagen para la vista previa.'));
-          };
-          img.src = dataUrl;
-        });
-      }
-
-      function stripBase64Header(dataUrlOrBase64) {
-        if (!dataUrlOrBase64) return '';
-        if (dataUrlOrBase64.indexOf('base64,') !== -1) {
-          return dataUrlOrBase64.split('base64,')[1];
-        }
-        return dataUrlOrBase64;
-      }
-
-      async function fileToOptimizedSketch(file) {
-        const rawDataUrl = await readFileAsDataUrl(file);
-        return compressDataUrl(rawDataUrl);
-      }
-
-      async function handleSketchFile(file) {
+      // Manejador de archivo
+      sketchInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
         if (!file) return;
-        if (!file.type.startsWith('image/')) {
-          setUploadStatus('Selecciona un archivo de imagen (JPG, PNG o WEBP).', 'error');
-          return;
-        }
-        if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
-          setUploadStatus('El archivo supera ' + MAX_UPLOAD_MB + ' MB. Usa una imagen más liviana.', 'error');
-          return;
-        }
 
-        isProcessingSketch = true;
-        aiGenerateBtn.disabled = true;
-        setUploadStatus('Leyendo y convirtiendo a Base64…', '');
-
-        try {
-          const optimized = await fileToOptimizedSketch(file);
-          sketchDataUrl = optimized.dataUrl;
-          sketchBase64Pure = optimized.base64;
-          sketchBlob = optimized.blob;
-          sketchPreviewImg.src = sketchDataUrl;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          uploadedImage = evt.target.result;
+          sketchPreviewImg.src = uploadedImage;
           sketchPreview.classList.add('visible');
-          const sizeKb = Math.round(sketchBlob.size / 1024);
-          setUploadStatus('Boceto listo (Base64 + archivo binario · ~' + sizeKb + ' KB). Puedes generar.', 'ready');
-          aiGenerateBtn.disabled = false;
-        } catch (err) {
-          sketchDataUrl = '';
-          sketchBase64Pure = '';
-          sketchBlob = null;
-          sketchPreview.classList.remove('visible');
-          sketchPreviewImg.removeAttribute('src');
-          setUploadStatus(err.message || 'Error al cargar la imagen.', 'error');
-        } finally {
-          isProcessingSketch = false;
-        }
-      }
-
-      sketchInput.addEventListener('change', function () {
-        if (sketchInput.files && sketchInput.files[0]) {
-          handleSketchFile(sketchInput.files[0]);
-        }
+          uploadStatus.textContent = '✓ Imagen lista para procesar';
+          uploadStatus.classList.add('ready');
+        };
+        reader.readAsDataURL(file);
       });
 
-      uploadZone.addEventListener('dragover', function (e) {
+      // Drag & drop
+      uploadZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadZone.classList.add('dragover');
       });
-
-      uploadZone.addEventListener('dragleave', function () {
-        uploadZone.classList.remove('dragover');
-      });
-
-      uploadZone.addEventListener('drop', function (e) {
+      uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+      uploadZone.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadZone.classList.remove('dragover');
-        const file = e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file) handleSketchFile(file);
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          sketchInput.files = e.dataTransfer.files;
+          sketchInput.dispatchEvent(new Event('change'));
+        }
       });
 
-      function randomSeed() {
-        return Math.floor(Math.random() * 999999);
-      }
+      // Envío del formulario
+      aiForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      function buildPollinationsQuery(extra) {
-        const q = {
-          enhance: aiEnhance.checked ? 'true' : 'false',
-          seed: String(randomSeed()),
-          width: aiWidth.value,
-          height: aiHeight.value,
-          nologo: aiNologo.checked ? 'true' : 'false'
-        };
-        if (extra) Object.assign(q, extra);
-        return new URLSearchParams(q).toString();
-      }
-
-      function buildPollinationsPromptUrl(prompt, extraParams) {
-        return POLLINATIONS_PROMPT_BASE + encodeURIComponent(prompt.trim()) +
-          '?' + buildPollinationsQuery(extraParams);
-      }
-
-      function buildPollinationsGetI2IUrl(prompt, base64Pure) {
-        const imageParam = 'data:image/jpeg;base64,' + stripBase64Header(base64Pure);
-        const base = buildPollinationsPromptUrl(prompt, { model: 'kontext' });
-        if (base.length + imageParam.length > 1800000) {
-          throw new Error('El boceto es demasiado grande para envío GET. Se usará POST automático.');
-        }
-        return base + '&image=' + encodeURIComponent(imageParam);
-      }
-
-      function showResultFromBlob(blob) {
-        if (!blob || !blob.type.startsWith('image/')) {
-          throw new Error('La respuesta no es una imagen válida.');
-        }
-        if (resultObjectUrl) URL.revokeObjectURL(resultObjectUrl);
-        resultObjectUrl = URL.createObjectURL(blob);
-        lastResultUrl = resultObjectUrl;
-        aiResult.src = resultObjectUrl;
-        aiResult.hidden = false;
-      }
-
-      function fetchWithTimeout(url, options) {
-        const controller = new AbortController();
-        const timer = setTimeout(function () { controller.abort(); }, GENERATE_TIMEOUT_MS);
-        return fetch(url, Object.assign({}, options, { signal: controller.signal }))
-          .finally(function () { clearTimeout(timer); });
-      }
-
-      async function generateWithFormData(prompt) {
-        if (!sketchBlob) throw new Error('No hay archivo de boceto para enviar.');
-        const url = buildPollinationsPromptUrl(prompt, { model: 'sana' });
-        const form = new FormData();
-        form.append('image', sketchBlob, 'boceto.jpg');
-        const response = await fetchWithTimeout(url, {
-          method: 'POST',
-          body: form,
-          mode: 'cors'
-        });
-        if (!response.ok) {
-          throw new Error('POST Pollinations: error ' + response.status);
-        }
-        return response.blob();
-      }
-
-      function generateWithImageElement(imageUrl) {
-        return new Promise(function (resolve, reject) {
-          const loader = new Image();
-          const timer = setTimeout(function () {
-            loader.onload = loader.onerror = null;
-            reject(new Error('Tiempo de espera agotado al generar la imagen.'));
-          }, GENERATE_TIMEOUT_MS);
-          loader.onload = function () {
-            clearTimeout(timer);
-            const canvas = document.createElement('canvas');
-            canvas.width = loader.naturalWidth;
-            canvas.height = loader.naturalHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(loader, 0, 0);
-            canvas.toBlob(function (blob) {
-              if (blob) resolve(blob);
-              else reject(new Error('No se pudo leer la imagen generada.'));
-            }, 'image/jpeg', 0.92);
-          };
-          loader.onerror = function () {
-            clearTimeout(timer);
-            reject(new Error('No se pudo cargar la imagen desde Pollinations.'));
-          };
-          loader.src = imageUrl;
-        });
-      }
-
-      function showGenerateError(message) {
-        aiLoading.classList.remove('active');
-        aiResult.hidden = true;
-        aiPlaceholder.hidden = false;
-        aiPlaceholder.querySelector('p').textContent = message;
-        aiGenerateBtn.disabled = isProcessingSketch;
-        aiDownloadBtn.disabled = true;
-        aiRegenerateBtn.disabled = !sketchDataUrl;
-      }
-
-      async function generateImage() {
-        const prompt = aiPrompt.value.trim();
-        if (!prompt) return;
-        if (!sketchBlob && !sketchBase64Pure) {
-          setUploadStatus('Sube un boceto antes de generar.', 'error');
+        if (!uploadedImage) {
+          uploadStatus.textContent = '❌ Por favor sube una imagen';
+          uploadStatus.classList.add('error');
           return;
         }
-        if (isProcessingSketch) return;
 
-        aiPlaceholder.hidden = true;
-        aiResult.hidden = true;
+        const width = parseInt(document.getElementById('aiWidth').value);
+        const height = parseInt(document.getElementById('aiHeight').value);
+        const prompt = aiPrompt.value;
+
         aiLoading.classList.add('active');
-        aiGenerateBtn.disabled = true;
-        aiDownloadBtn.disabled = true;
-        aiRegenerateBtn.disabled = true;
-        setUploadStatus('Enviando boceto a Pollinations.ai (POST)…', '');
-
-        let blob = null;
-        let lastError = null;
+        aiActions.style.display = 'none';
 
         try {
-          blob = await generateWithFormData(prompt);
-          setUploadStatus('Imagen recibida vía POST.', 'ready');
-        } catch (errPost) {
-          lastError = errPost;
-          setUploadStatus('POST falló, probando GET con Base64 (sin prefijo)…', '');
-          try {
-            const getUrl = buildPollinationsGetI2IUrl(prompt, sketchBase64Pure);
-            blob = await generateWithImageElement(getUrl);
-            setUploadStatus('Imagen recibida vía GET.', 'ready');
-          } catch (errGet) {
-            lastError = errGet;
-            setUploadStatus('GET falló, probando fetch GET compacto…', '');
-            try {
-              const getUrl = buildPollinationsGetI2IUrl(prompt, sketchBase64Pure);
-              const res = await fetchWithTimeout(getUrl, { method: 'GET', mode: 'cors' });
-              if (!res.ok) throw new Error('GET error ' + res.status);
-              blob = await res.blob();
-            } catch (errFetch) {
-              lastError = errFetch;
-            }
+          let finalImageUrl;
+
+          if (useControlNet.checked) {
+            // Procesar con ControlNet (Canny Edge Detection)
+            finalImageUrl = await generateWithControlNet(uploadedImage, prompt, width, height);
+          } else {
+            // Procesar directamente con Stable Diffusion
+            finalImageUrl = await generateWithStableDiffusion(uploadedImage, prompt, width, height);
           }
-        }
 
-        if (blob) {
-          try {
-            showResultFromBlob(blob);
-            aiLoading.classList.remove('active');
-            aiGenerateBtn.disabled = false;
-            aiDownloadBtn.disabled = false;
-            aiRegenerateBtn.disabled = false;
-            setUploadStatus('Render generado correctamente.', 'ready');
-            return;
-          } catch (e) {
-            lastError = e;
+          generatedImageUrl = finalImageUrl;
+          const img = aiPreview.querySelector('img') || document.createElement('img');
+          img.src = finalImageUrl;
+          img.alt = 'Render generado';
+          if (!aiPreview.querySelector('img')) {
+            aiPreview.innerHTML = '';
+            aiPreview.appendChild(img);
           }
+          aiActions.style.display = 'flex';
+        } catch (error) {
+          console.error('Error:', error);
+          aiPreview.innerHTML = `<div class="ai-preview-placeholder"><p>❌ Error en generación: ${error.message}</p></div>`;
+        } finally {
+          aiLoading.classList.remove('active');
         }
-
-        const msg = (lastError && lastError.name === 'AbortError')
-          ? 'La generación tardó demasiado. Intenta de nuevo con un boceto más pequeño.'
-          : ((lastError && lastError.message) ||
-            'No se pudo generar. Abre la página con un servidor local (no solo archivo) o reduce el tamaño del boceto.');
-        showGenerateError(msg);
-        setUploadStatus('Error: ' + (lastError && lastError.message ? lastError.message : 'conexión'), 'error');
-      }
-
-      aiForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        generateImage();
       });
 
-      aiRegenerateBtn.addEventListener('click', generateImage);
+      // Generación con ControlNet (recomendado para arquitectura)
+      async function generateWithControlNet(imageData, prompt, width, height) {
+        const payload = {
+          prompt: prompt,
+          negative_prompt: useNegativePrompt.checked ? STABLE_DIFFUSION_CONFIG.negativePrompt : '',
+          width: width,
+          height: height,
+          num_inference_steps: STABLE_DIFFUSION_CONFIG.steps,
+          guidance_scale: STABLE_DIFFUSION_CONFIG.guidanceScale,
+          image: imageData,
+          control_type: 'canny',
+          controlnet_conditioning_scale: 1.0,
+          model: STABLE_DIFFUSION_CONFIG.model,
+          controlnet: STABLE_DIFFUSION_CONFIG.controlnet
+        };
 
-      aiDownloadBtn.addEventListener('click', function () {
-        if (!aiResult.src) return;
+        const response = await fetch(STABLE_DIFFUSION_CONFIG.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        
+        const data = await response.json();
+        return data.images[0] || data.output[0];
+      }
+
+      // Generación directa con Stable Diffusion
+      async function generateWithStableDiffusion(imageData, prompt, width, height) {
+        const payload = {
+          prompt: prompt,
+          negative_prompt: useNegativePrompt.checked ? STABLE_DIFFUSION_CONFIG.negativePrompt : '',
+          width: width,
+          height: height,
+          num_inference_steps: STABLE_DIFFUSION_CONFIG.steps,
+          guidance_scale: STABLE_DIFFUSION_CONFIG.guidanceScale,
+          image: imageData,
+          strength: STABLE_DIFFUSION_CONFIG.strength,
+          model: STABLE_DIFFUSION_CONFIG.model
+        };
+
+        const response = await fetch(STABLE_DIFFUSION_CONFIG.apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        
+        const data = await response.json();
+        return data.images[0] || data.output[0];
+      }
+
+      // Descargar render
+      downloadRender.addEventListener('click', () => {
+        if (!generatedImageUrl) return;
         const a = document.createElement('a');
-        a.href = aiResult.src;
-        a.download = 'alipen-render-' + Date.now() + '.jpg';
+        a.href = generatedImageUrl;
+        a.download = 'render-arquitectonico.png';
         a.click();
+      });
+
+      // Limpiar formulario
+      clearRender.addEventListener('click', () => {
+        uploadedImage = null;
+        generatedImageUrl = null;
+        aiForm.reset();
+        sketchPreview.classList.remove('visible');
+        uploadStatus.textContent = '';
+        uploadStatus.classList.remove('ready', 'error');
+        aiPreview.innerHTML = `
+          <div class="ai-preview-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p>Tu render aparecerá aquí</p>
+          </div>
+        `;
+        aiActions.style.display = 'none';
       });
 
     })();
